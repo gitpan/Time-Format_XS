@@ -13,9 +13,9 @@ The GPG signature in this file may be checked with 'gpg --verify format.c'. */
 #include <ctype.h>
 #include "format.h"
 
-static char _VERSION[] = "0.10";
+static char _VERSION[] = "0.11";
 
-/* format.c, version 0.10.
+/* format.c, version 0.11.
 
 This is part of the Time::Format_XS module.  See the .pm file for documentation.
 
@@ -606,8 +606,8 @@ char *time_format(const char *fmt, const char *in_time)
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.2.2 (GNU/Linux)
 
-iD8DBQE/B3e8Y96i4h5M0egRApWPAJ9aQIov/TVzYl0+g3lUUKNScjD12wCgypb0
-yJci92tZF6biVALclV+NRz8=
-=HYCv
+iD8DBQE/DuAfY96i4h5M0egRAiuCAJ9KNS4ZItyFFhpt0oLc75yKnutQGgCbBSu/
+tD5xMs1yn+j69vdWLtm/MLQ=
+=sb9y
 -----END PGP SIGNATURE-----
 */

@@ -8,7 +8,7 @@ Time::Format_XS - Companion module for Time::Format, to speed up time formatting
 
 =head1 VERSION
 
-This document describes version 0.10 of Time::Format_XS, July 5, 2003.
+This document describes version 0.11 of Time::Format_XS, July 11, 2003.
 
 Note: Time::Format_XS's version number is set to the Time::Format version
 number that it is distributed with, so this number doesn't mean a whole lot.
@@ -18,7 +18,7 @@ number that it is distributed with, so this number doesn't mean a whole lot.
 use strict;
 package Time::Format_XS;
 use vars '$VERSION';
-$VERSION = '0.10';
+$VERSION = '0.11';
 
 require XSLoader;
 XSLoader::load('Time::Format_XS', $VERSION);
@@ -83,9 +83,9 @@ same terms as Perl itself.
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.2.2 (GNU/Linux)
 
-iD8DBQE/ByRYY96i4h5M0egRAuZKAKCRr37awFDvmTjk40Yfrx+3uGXeNgCfTE9u
-gQwJzqMZpqZt+qdPv753S64=
-=5MhY
+iD8DBQE/DuCAY96i4h5M0egRAgctAJ4yylok2ta/tqv0ntJRnQEAWexSPwCg4YhC
+H5cF0dgrgy4b/v+mRZjL1Qo=
+=0VhX
 -----END PGP SIGNATURE-----
 
 =end gpg

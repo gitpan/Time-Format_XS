@@ -1,4 +1,4 @@
-Time/Format_XS version 0.10
+Time/Format_XS version 0.11
 ===========================
 
 This is a companion module to Time::Format.  It contains a version of
@@ -28,7 +28,7 @@ This module requires the following internationalization C header files
 
 and their associated libraries.
 
-COPYRIGHT AND LICENCE
+COPYRIGHT AND LICENSE
 
 Copyright (C) 2003 Eric J. Roode.  All rights reserved.
 
