@@ -3,7 +3,6 @@
 #include "XSUB.h"
 
 #include "ppport.h"
-#include "format.h"
 
 #include "format.c"
 

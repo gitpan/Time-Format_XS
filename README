@@ -1,4 +1,4 @@
-Time/Format_XS version 0.12
+Time/Format_XS version 0.13
 ===========================
 
 This is a companion module to Time::Format.  It contains a version of
@@ -19,14 +19,20 @@ To install this module, do the standard Perl module four-step:
    make test
    make install
 
+Note that Windows users using Microsoft Visual C will need to run
+VCVARS32.BAT before running "perl Makefile.PL", and will need to use
+nmake.exe (available for free from microsoft.com) instead of make.
+
+Or wait until ActiveState makes the module available in their
+repository.  :-)
+
 DEPENDENCIES
 
-This module requires the following internationalization C header files
+This module requires the standard C header file locale.h, which should
+be installed with any ISO compliant C compiler.
 
-  locale.h
-  langinfo.h
-
-and their associated libraries.
+If the POSIX langinfo.h header file is not available on your system,
+non-English month and weekday names will return English names only.
 
 COPYRIGHT AND LICENSE
 

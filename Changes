@@ -11,3 +11,9 @@ Revision history for Perl extension Time::Format_XS.
         - International month is now not case-converted; interpolated
           in the locale-preferred capitalization.
         - Support \Q, \U, \L, \E, \l, \u.
+
+0.13  2003 August 1
+        - Complete rewrite.  Now more structured and easier to maintain.
+          And almost 10% faster to boot.
+        - Now works on platforms where langinfo.h is not available.
+        - Many thanks to Mike Taylor for testing under Windows.

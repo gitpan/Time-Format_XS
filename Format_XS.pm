@@ -8,17 +8,14 @@ Time::Format_XS - Companion module for Time::Format, to speed up time formatting
 
 =head1 VERSION
 
-This document describes version 0.11 of Time::Format_XS, July 11, 2003.
-
-Note: Time::Format_XS's version number is set to the Time::Format version
-number that it is distributed with, so this number doesn't mean a whole lot.
+This document describes version 0.13 of Time::Format_XS, August 1, 2003.
 
 =cut
 
 use strict;
 package Time::Format_XS;
 use vars '$VERSION';
-$VERSION = '0.12';
+$VERSION = '0.13';
 
 require XSLoader;
 XSLoader::load('Time::Format_XS', $VERSION);
@@ -38,13 +35,14 @@ particularly speedy, either.
 This module, Time::Format_XS, provides a huge performance improvement
 for the main formatting function in Time::Format.  This is the
 C<time_format> function, usually accessed via the C<%time> hash.  On
-my test system, this function was 12 times faster with the
+my test system, this function was 15 times faster with the
 Time::Format_XS module installed.
 
 To use this module, all you have to do is install it.  Versions 0.10
 and later of Time::Format will automatically detect if your system has
 Time::Format_XS installed and will use it without your having to
-change any code of yours that uses Time::Format.
+change any code of yours that uses Time::Format.  However, be sure
+that the installed versions of Time::Format and Time::Format_XS match.
 
 Time::Format_XS is distributed as a separate module because not
 everybody can use XS.  Not everyone has a C compiler.  Also,
@@ -60,7 +58,7 @@ Time::Format_XS is present, Time::Format will be faster.  If not, it
 won't.  Either way, it will still work, and your code will not have to
 change.
 
-=head2 EXPORTS
+=head1 EXPORTS
 
 None.
 
@@ -83,9 +81,9 @@ same terms as Perl itself.
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.2.2 (GNU/Linux)
 
-iD8DBQE/G1hZY96i4h5M0egRAo1mAJ9cvkfCjFBXzHd12gk79dTvlfsEtgCcCuqU
-ogZgsL4/5PYrevdTZa2oRdM=
-=q/ZB
+iD8DBQE/KVwRY96i4h5M0egRAqvjAKDc5tdm3pl/taL3vaie/6Dp92whfgCdF5h0
+QP4ZixBvK/m0pBqayThlWV8=
+=RFr2
 -----END PGP SIGNATURE-----
 
 =end gpg
