@@ -1,0 +1,4 @@
+Revision history for Perl extension Time::Format_XS.
+
+0.10  2003 July 5
+	- First version.  Version number to match that of Time::Format.

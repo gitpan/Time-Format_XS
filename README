@@ -1,0 +1,37 @@
+Time/Format_XS version 0.10
+===========================
+
+This is a companion module to Time::Format.  It contains a version of
+the time_format function written in C, so it is much faster.
+
+Time::Format (versions 0.10 and later) automatically detect whether
+Time::Format_XS is installed.  If so, it will load the module and use
+it for speed improvement.  If not, it will use its own pure perl
+implementation.  Either way, any programs that use Time::Format do not
+need to change.
+
+INSTALLATION
+
+To install this module, do the standard Perl module four-step:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+DEPENDENCIES
+
+This module requires the following internationalization C header files
+
+  locale.h
+  langinfo.h
+
+and their associated libraries.
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2003 Eric J. Roode.  All rights reserved.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+
