@@ -18,7 +18,7 @@ number that it is distributed with, so this number doesn't mean a whole lot.
 use strict;
 package Time::Format_XS;
 use vars '$VERSION';
-$VERSION = '0.11';
+$VERSION = '0.12';
 
 require XSLoader;
 XSLoader::load('Time::Format_XS', $VERSION);
@@ -83,9 +83,9 @@ same terms as Perl itself.
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.2.2 (GNU/Linux)
 
-iD8DBQE/DuCAY96i4h5M0egRAgctAJ4yylok2ta/tqv0ntJRnQEAWexSPwCg4YhC
-H5cF0dgrgy4b/v+mRZjL1Qo=
-=0VhX
+iD8DBQE/G1hZY96i4h5M0egRAo1mAJ9cvkfCjFBXzHd12gk79dTvlfsEtgCcCuqU
+ogZgsL4/5PYrevdTZa2oRdM=
+=q/ZB
 -----END PGP SIGNATURE-----
 
 =end gpg

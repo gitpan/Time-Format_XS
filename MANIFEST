@@ -9,3 +9,4 @@ SIGNATURE
 format.c
 format.h
 t/func.t
+t/quot.t

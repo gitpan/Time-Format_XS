@@ -121,7 +121,7 @@ SKIP:
     is time_format('?H:m',$t),      ' 1:58'     => 'm test: Hour12:';
 
     # cases 'm' guessing can't handle (3)
-    is time_format('mm',$t),        '00'        => '2-digit month/minute';
-    is time_format('m',$t),         '0'         => '1-digit month/minute';
-    is time_format('?m',$t),        ' 0'        => 'spaced month/minute';
+    is time_format('mm',$t),        'mm'        => '2-digit month/minute';
+    is time_format('m',$t),         'm'         => '1-digit month/minute';
+    is time_format('?m',$t),        '?m'        => 'spaced month/minute';
 }

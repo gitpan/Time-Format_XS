@@ -13,9 +13,9 @@ The GPG signature in this file may be checked with 'gpg --verify format.c'. */
 #include <ctype.h>
 #include "format.h"
 
-static char _VERSION[] = "0.11";
+static char _VERSION[] = "0.12";
 
-/* format.c, version 0.11.
+/* format.c, version 0.12
 
 This is part of the Time::Format_XS module.  See the .pm file for documentation.
 
@@ -53,25 +53,29 @@ static size_t packnum(char **out, int num, int len, char pad)
     return outlen;
     }
 
-/* String cases: Uppercase, lowercase, mixed case, no case conversion */
-enum cases { UC, LC, NC, MC };
+/* String cases: Uppercase, lowercase, mixed case, no case conversion, one-shot LC, one-shot UC */
+enum cases { UC, LC, NC };
 
 /* packstr
 Append a string to the end of the output, performing case conversion.
 */
-static size_t packstr(char **out, const char *str, enum cases c)
+static size_t packstr(char **out, const char *str, size_t len, enum cases cfirst, enum cases crest)
     {
     char *target = *out;
     int ch;
-    if ((c == MC)  &&  (ch = *str))    /* Mixed case; make first character uppercase */
+    enum cases c = cfirst;
+    if (!*str || len--==0)  return 0;  /* degenerate case */
+
+    switch (cfirst)
         {
-        str++;
-        *target++ = toupper(ch);
-        c = LC;  /* make the rest lowercase */
+            case UC: *target++ = toupper(*str++); break;
+            case LC: *target++ = tolower(*str++); break;
+            case NC: *target++ =         *str++;  break;
         }
-    while (ch = *str++)
+
+    while ((ch = *str++)  &&  len--)
         {
-        switch (c)
+        switch (crest)
             {
                 case UC: *target++ = toupper(ch); break;
                 case LC: *target++ = tolower(ch); break;
@@ -273,11 +277,11 @@ static void setup_locale(void)
     }
 
 /* helper function -- tightly bound with time_format() */
-static void translate_str(const char *pat, const char **fmt, char **out, const char *newval, enum cases c, size_t *len, int modifying)
+static void translate_str(const char *pat, const char **fmt, char **out, const char *newval, enum cases cf, enum cases cr, size_t *len, int modifying)
     {
     *fmt += strlen(pat);
     if (modifying)
-        packstr(out, newval, c);
+        packstr(out, newval, -1, cf, cr);
     else
         *len += strlen(newval);
     }
@@ -316,16 +320,38 @@ char *time_format(const char *fmt, const char *in_time)
     size_t length = 0;
     for (modifying=0; modifying<=1; modifying++)
         {
+        int reset_uclc;
+        int upper=0, lower=0, uppernext=0, lowernext=0, quoting=0;
         while (*fmt)
             {
-            char *jump = strpbrk(fmt, "\\dDy?hHsaApPMmWwutT");  /* jump to one of these */
+            char *jump;
+            enum cases first, rest, f, r;
+            reset_uclc = 1;    /* reset uppernext and lowernext by default */
+
+            if (quoting)
+                jump = strstr(fmt, "\\E");    /* look for end of literal-quote */
+            else
+                jump = strpbrk(fmt, "\\dDy?hHsaApPMmWwutT");  /* jump to one of these */
+
+            /* what sort of case conversions to do? */
+            if (lower)
+                rest = LC;
+            else if (upper)
+                rest = UC;
+            else
+                rest = NC;
+
+            if (lowernext)
+                first = LC;
+            else if (uppernext)
+                first = UC;
+            else
+                first = rest;
+
             if (NULL == jump)
                 {
                 if (modifying)
-                    {
-                    strcpy(out, fmt);    /* No further matches; done! */
-                    out += strlen(fmt);
-                    }
+                    packstr(&out, fmt, -1, first, rest);    /* No further matches; done! */
                 else
                     length += strlen(fmt);
                 break;
@@ -333,10 +359,7 @@ char *time_format(const char *fmt, const char *in_time)
             else if (jump > fmt)    /* skip over the section that does not contain codes */
                 {
                 if (modifying)
-                    {
-                    strncpy(out, fmt, jump-fmt);
-                    out += jump-fmt;
-                    }
+                    packstr(&out, fmt, jump-fmt, first, rest);
                 else
                     length += jump-fmt;
                 fmt = jump;
@@ -346,7 +369,42 @@ char *time_format(const char *fmt, const char *in_time)
                 {
                     case '\\':        /* escape character */
                           fmt++;
-                          if (modifying) *out++ = *fmt++; else length++, fmt++;
+                          switch (*fmt)
+                              {
+                                  case 'Q':    /* Begin quote */
+                                        fmt++;
+                                        quoting = 1;
+                                        break;
+                                  case 'E':    /* end quote */
+                                        fmt++;
+                                        quoting = upper = lower = lowernext = uppernext = 0;
+                                        break;
+                                  case 'U':    /* begin uppercasing */
+                                        fmt++;
+                                        reset_uclc = 0;    /* don't reset uppernext/lowernext */
+                                        upper = 1;
+                                        break;
+                                  case 'L':    /* begin lowercasing */
+                                        fmt++;
+                                        reset_uclc = 0;
+                                        lower = 1;
+                                        break;
+                                  case 'u':    /* one-shot upper */
+                                        fmt++;
+                                        reset_uclc = 0;
+                                        lowernext = 0;
+                                        uppernext = 1;
+                                        break;
+                                  case 'l':    /* one-shot lower */
+                                        fmt++;
+                                        reset_uclc = 0;
+                                        uppernext = 0;
+                                        lowernext = 1;
+                                        break;
+                                  default:
+                                        if (modifying) *out++ = *fmt++; else length++, fmt++;
+                                        break;
+                              }
                           break;
 
                     case 'd':        /* dd, day, d */
@@ -355,8 +413,10 @@ char *time_format(const char *fmt, const char *in_time)
                               translate_num("dd", &fmt, &out, t->tm_mday, 2, '0', &length, modifying);
                           else if (forward(fmt, "day"))
                               {
+                              f = first==NC? LC : first;
+                              r = rest ==NC? LC : rest;
                               if (!checked_locale++) setup_locale();
-                              translate_str("day", &fmt, &out, Day[t->tm_wday], LC, &length, modifying);
+                              translate_str("day", &fmt, &out, Day[t->tm_wday], f,r, &length, modifying);
                               }
                           else
                               translate_num("d", &fmt, &out, t->tm_mday, 0, 'x', &length, modifying);
@@ -399,13 +459,17 @@ char *time_format(const char *fmt, const char *in_time)
 
                           if (forward(fmt, "month"))
                               {
+                              f = first==NC? LC : first;
+                              r = rest ==NC? LC : rest;
                               if (!checked_locale++) setup_locale();
-                              translate_str("month", &fmt, &out, Month[t->tm_mon], LC, &length, modifying);
+                              translate_str("month", &fmt, &out, Month[t->tm_mon], f,r, &length, modifying);
                               }
                           else if (forward(fmt, "mon"))
                               {
+                              f = first==NC? LC : first;
+                              r = rest ==NC? LC : rest;
                               if (!checked_locale++) setup_locale();
-                              translate_str("mon", &fmt, &out, Mon[t->tm_mon], LC, &length, modifying);
+                              translate_str("mon", &fmt, &out, Mon[t->tm_mon], f,r, &length, modifying);
                               }
                           else if (forward(fmt, "mm{on}"))
                               translate_num("mm{on}", &fmt, &out, month, 2, '0', &length, modifying);
@@ -424,13 +488,25 @@ char *time_format(const char *fmt, const char *in_time)
                               }
                           else if (fmt[1] == 'm')    /* mm -- months or minutes? */
                               {
-                              int which = month_context(start,fmt,2)? month : minute_context(start,fmt,2)? t->tm_min : 0;
-                              translate_num("mm", &fmt, &out, which, 2, '0', &length, modifying);
+                              if (month_context(start,fmt,2))
+                                  translate_num("mm", &fmt, &out, month, 2, '0', &length, modifying);
+                              else if (minute_context(start,fmt,2))
+                                  translate_num("mm", &fmt, &out, t->tm_min, 2, '0', &length, modifying);
+                              else
+                                  {    /* Can't tell -- just put the 'mm' in there unchanged. */
+                                  translate_str("mm", &fmt, &out, "mm", first,rest, &length, modifying);
+                                  }
                               }
                           else    /* m -- months or minutes? */
                               {
-                              int which = month_context(start,fmt,1)? month : minute_context(start,fmt,1)? t->tm_min : 0;
-                              translate_num("m", &fmt, &out, which, 0, 'x', &length, modifying);
+                              if (month_context(start,fmt,1))
+                                  translate_num("m", &fmt, &out, month, 0, 'x', &length, modifying);
+                              else if (minute_context(start,fmt,1))
+                                  translate_num("m", &fmt, &out, t->tm_min, 0, 'x', &length, modifying);
+                              else
+                                  {    /* Can't tell -- just put the 'm' in there unchanged. */
+                                  translate_str("m", &fmt, &out, "m", first,rest, &length, modifying);
+                                  }
                               }
                           break;
 
@@ -439,22 +515,26 @@ char *time_format(const char *fmt, const char *in_time)
                           if (forward(fmt, "Month"))
                               {
                               if (!checked_locale++) setup_locale();
-                              translate_str("Month", &fmt, &out, Month[t->tm_mon], MC, &length, modifying);
+                              translate_str("Month", &fmt, &out, Month[t->tm_mon], first,rest, &length, modifying);
                               }
                           else if (forward(fmt, "MONTH"))
                               {
+                              f = first==NC? UC : first;
+                              r = rest ==NC? UC : rest;
                               if (!checked_locale++) setup_locale();
-                              translate_str("MONTH", &fmt, &out, Month[t->tm_mon], UC, &length, modifying);
+                              translate_str("MONTH", &fmt, &out, Month[t->tm_mon], f,r, &length, modifying);
                               }
                           else if (forward(fmt, "Mon"))
                               {
                               if (!checked_locale++) setup_locale();
-                              translate_str("Mon", &fmt, &out, Mon[t->tm_mon], MC, &length, modifying);
+                              translate_str("Mon", &fmt, &out, Mon[t->tm_mon], first,rest, &length, modifying);
                               }
                           else if (forward(fmt, "MON"))
                               {
+                              f = first==NC? UC : first;
+                              r = rest ==NC? UC : rest;
                               if (!checked_locale++) setup_locale();
-                              translate_str("MON", &fmt, &out, Mon[t->tm_mon], UC, &length, modifying);
+                              translate_str("MON", &fmt, &out, Mon[t->tm_mon], f,r, &length, modifying);
                               }
                           else if (modifying) *out++=*fmt++; else length++, fmt++;
                           break;
@@ -464,12 +544,14 @@ char *time_format(const char *fmt, const char *in_time)
                           if (forward(fmt, "Weekday"))
                               {
                               if (!checked_locale++) setup_locale();
-                              translate_str("Weekday", &fmt, &out, Weekday[t->tm_wday], MC, &length, modifying);
+                              translate_str("Weekday", &fmt, &out, Weekday[t->tm_wday], first,rest, &length, modifying);
                               }
                           else if (forward(fmt, "WEEKDAY"))
                               {
+                              f = first==NC? UC : first;
+                              r = rest ==NC? UC : rest;
                               if (!checked_locale++) setup_locale();
-                              translate_str("WEEKDAY", &fmt, &out, Weekday[t->tm_wday], UC, &length, modifying);
+                              translate_str("WEEKDAY", &fmt, &out, Weekday[t->tm_wday], f,r, &length, modifying);
                               }
                           else if (modifying) *out++=*fmt++; else length++, fmt++;
                           break;
@@ -478,8 +560,10 @@ char *time_format(const char *fmt, const char *in_time)
 
                           if (forward(fmt, "weekday"))
                               {
+                              f = first==NC? LC : first;
+                              r = rest ==NC? LC : rest;
                               if (!checked_locale++) setup_locale();
-                              translate_str("weekday", &fmt, &out, Weekday[t->tm_wday], LC, &length, modifying);
+                              translate_str("weekday", &fmt, &out, Weekday[t->tm_wday], f,r, &length, modifying);
                               }
                           else if (modifying) *out++=*fmt++; else length++, fmt++;
                           break;
@@ -489,12 +573,14 @@ char *time_format(const char *fmt, const char *in_time)
                           if (forward(fmt, "Day"))
                               {
                               if (!checked_locale++) setup_locale();
-                              translate_str("Day", &fmt, &out, Day[t->tm_wday], MC, &length, modifying);
+                              translate_str("Day", &fmt, &out, Day[t->tm_wday], first,rest, &length, modifying);
                               }
                           else if (forward(fmt, "DAY"))
                               {
+                              f = first==NC? UC : first;
+                              r = rest ==NC? UC : rest;
                               if (!checked_locale++) setup_locale();
-                              translate_str("DAY", &fmt, &out, Day[t->tm_wday], UC, &length, modifying);
+                              translate_str("DAY", &fmt, &out, Day[t->tm_wday], f,r, &length, modifying);
                               }
                           else if (modifying) *out++=*fmt++; else length++, fmt++;
                           break;
@@ -506,13 +592,17 @@ char *time_format(const char *fmt, const char *in_time)
 
                           if (forward(fmt, "am")  ||  forward(fmt, "pm")  ||  forward(fmt, "AM")  ||  forward(fmt, "PM"))
                               {
+                              f = first==NC? (fmt[1]=='m'? LC : UC) : first;
+                              r = rest ==NC? (fmt[1]=='m'? LC : UC) : rest;
                               char *ap  = t->tm_hour < 12? "am"   : "pm";
-                              translate_str("am", &fmt, &out, ap, (fmt[1]=='m'?NC:UC), &length, modifying);
+                              translate_str("am", &fmt, &out, ap, f,r, &length, modifying);
                               }
                           else if (forward(fmt, "a.m.")  ||  forward(fmt, "p.m.")  ||  forward(fmt, "A.M.")  ||  forward(fmt, "P.M."))
                               {
+                              f = first==NC? (fmt[2]=='m'? LC : UC) : first;
+                              r = rest ==NC? (fmt[2]=='m'? LC : UC) : rest;
                               char *a_p_= t->tm_hour < 12? "a.m." : "p.m.";
-                              translate_str("a.m.", &fmt, &out, a_p_, (fmt[2]=='m'?NC:UC), &length, modifying);
+                              translate_str("a.m.", &fmt, &out, a_p_, f,r, &length, modifying);
                               }
                           else if (modifying) *out++=*fmt++; else length++, fmt++;
                           break;
@@ -540,8 +630,14 @@ char *time_format(const char *fmt, const char *in_time)
                                             translate_num("?m{in}", &fmt, &out, t->tm_min, 2, ' ', &length, modifying);
                                         else    /* ?m -- months or minutes? */
                                             {
-                                            int which = month_context(start,fmt,2)? month : minute_context(start,fmt,2)? t->tm_min : 0;
-                                            translate_num("?m", &fmt, &out, which, 2, ' ', &length, modifying);
+                                            if (month_context(start,fmt,2))
+                                                translate_num("?m", &fmt, &out, month, 2, ' ', &length, modifying);
+                                            else if (minute_context(start,fmt,2))
+                                                translate_num("?m", &fmt, &out, t->tm_min, 2, ' ', &length, modifying);
+                                            else
+                                                {    /* Can't tell -- just put the '?m' in there unchanged. */
+                                                translate_str("?m", &fmt, &out, "?m", first,rest, &length, modifying);
+                                                }
                                             }
                                         break;
 
@@ -567,18 +663,20 @@ char *time_format(const char *fmt, const char *in_time)
 
                           if (fmt[1] == 'z')
                               {
-                              char zone[32];
+                              char zone[32];   /* I'm assuming 32 is enough... */
                               (void) strftime(zone, 32, "%Z", t);
-                              translate_str("tz", &fmt, &out, zone, NC, &length, modifying);
+                              translate_str("tz", &fmt, &out, zone, first,rest, &length, modifying);
                               }
                           else if (forward(fmt, "th") || forward(fmt, "TH"))    /* day ordinal suffix */
                               {
+                              f = first==NC? (*fmt=='t'? LC : UC) : first;
+                              r = rest ==NC? (*fmt=='t'? LC : UC) : rest;
                               static char *suffix[] = {"th", "st", "nd", "rd"};
                               int ones = t->tm_mday % 10;
                               int tens = t->tm_mday % 100 / 10;
                               if (tens == 1  ||  ones > 3) ones = 0;
 
-                              translate_str("th", &fmt, &out, suffix[ones], (*fmt=='T'?UC:NC), &length, modifying);
+                              translate_str("th", &fmt, &out, suffix[ones], f,r, &length, modifying);
                               }
                           else if (modifying) *out++=*fmt++; else length++, fmt++;
                           break;
@@ -588,6 +686,8 @@ char *time_format(const char *fmt, const char *in_time)
                           break;
                 }
 
+            if (reset_uclc)
+                lowernext = uppernext = 0;
             }
         if (modifying)
             *out = '\0';
@@ -606,8 +706,8 @@ char *time_format(const char *fmt, const char *in_time)
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.2.2 (GNU/Linux)
 
-iD8DBQE/DuAfY96i4h5M0egRAiuCAJ9KNS4ZItyFFhpt0oLc75yKnutQGgCbBSu/
-tD5xMs1yn+j69vdWLtm/MLQ=
-=sb9y
+iD8DBQE/G0taY96i4h5M0egRAu2JAKDlpcYj1R5opzKy2eJaTZUoMXZH6gCghUNk
+0DJrwiK3xple1mAYwypwSs0=
+=WLuA
 -----END PGP SIGNATURE-----
 */
