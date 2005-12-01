@@ -5,7 +5,9 @@ Makefile.PL
 MANIFEST
 ppport.h
 README
-SIGNATURE
 format.c
+t/DateTime.t
 t/func.t
+t/iso8601.t
 t/quot.t
+META.yml                                 Module meta-data (added by MakeMaker)

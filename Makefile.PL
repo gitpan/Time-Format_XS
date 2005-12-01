@@ -5,7 +5,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     'NAME'		=> 'Time::Format_XS',
     'VERSION_FROM'	=> 'Format_XS.pm', # finds $VERSION
-    'PREREQ_PM'		=> {}, # e.g., Module::Name => 1.1
+    'PREREQ_PM'		=> {Time::Format => '1.01'}, # e.g., Module::Name => 1.1
     'depend'            => {'Format_XS.c' => 'format.c'},
     ($] >= 5.005 ?    ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM => 'Format_XS.pm', # retrieve abstract from module

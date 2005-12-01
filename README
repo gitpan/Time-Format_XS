@@ -1,14 +1,14 @@
-Time/Format_XS version 0.13
+Time/Format_XS version 1.01
 ===========================
 
 This is a companion module to Time::Format.  It contains a version of
 the time_format function written in C, so it is much faster.
 
-Time::Format (versions 0.10 and later) automatically detect whether
-Time::Format_XS is installed.  If so, it will load the module and use
-it for speed improvement.  If not, it will use its own pure perl
-implementation.  Either way, any programs that use Time::Format do not
-need to change.
+Time::Format (versions 0.10 and later) automatically detect whether a
+compatible version of Time::Format_XS is installed.  If so, it will
+load the module and use it for speed improvement.  If not, it will use
+its own pure perl implementation.  Either way, any programs that use
+Time::Format do not need to change.
 
 INSTALLATION
 
@@ -36,8 +36,11 @@ non-English month and weekday names will return English names only.
 
 COPYRIGHT AND LICENSE
 
-Copyright (C) 2003 Eric J. Roode.  All rights reserved.
+Copyright (C) 2003-2005 Eric J. Roode.  All rights reserved.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
 
+To avoid my spam filter, please include "Perl", "module", or this
+module's name in the message's subject line, and/or GPG-sign your
+message.

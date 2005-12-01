@@ -10,7 +10,7 @@
 MODULE = Time::Format_XS		PACKAGE = Time::Format_XS		
 
 SV *
-time_format(char *fmt, char * in_time);
+time_format(char *fmt, SV * in_time);
     CODE:
         char *ret = time_format(fmt, in_time);
         RETVAL = newSVpv(ret, 0);

@@ -1,7 +1,7 @@
 Revision history for Perl extension Time::Format_XS.
 
 0.10  2003 July 5
-	- First version.  Version number to match that of Time::Format.
+        - First version.  Version number to match that of Time::Format.
 
 0.11  2003 Juy 11
         - No changes.  Version number incremented to keep up with
@@ -17,3 +17,10 @@ Revision history for Perl extension Time::Format_XS.
           And almost 10% faster to boot.
         - Now works on platforms where langinfo.h is not available.
         - Many thanks to Mike Taylor for testing under Windows.
+
+1.00  2004 August 10
+        - Increase version to 1.00.  No other changes.
+
+1.01  2005 December 1
+        - Now handles DateTime objects, stringified DateTimes,
+          Date::Manip strings, and iso8601 strings.

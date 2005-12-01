@@ -6,12 +6,7 @@ use Test::More tests => 80;
 BEGIN { use_ok 'Time::Format_XS' }
 
 # "import" time_format function
-sub time_format
-{
-    my $fmt  = shift;
-    my $time = shift;
-    Time::Format_XS::time_format($fmt, $time)
-}
+*time_format = \&Time::Format_XS::time_format;
 
 my $tl_notok;
 BEGIN { eval 'use Time::Local'; $tl_notok = $@? 1 : 0 }
