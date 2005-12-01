@@ -8,17 +8,17 @@ Time::Format_XS - Companion module for Time::Format, to speed up time formatting
 
 =head1 VERSION
 
-This document describes version 1.01 of Time::Format_XS, December 1, 2005.
+This document describes version 1.02 of Time::Format_XS, December 1, 2005.
 
 =cut
 
 use strict;
 package Time::Format_XS;
 use vars qw($VERSION %PLCOMPAT);
-$VERSION = '1.01';
+$VERSION = '1.02';
 
-# List of the perl versions that this module is compatible with:
-%PLCOMPAT = map {$_ => 1} qw(1.01);
+# List of the perl Time::Format versions that this module is compatible with:
+%PLCOMPAT = map {$_ => 1} qw(1.01 1.02);
 
 sub _croak
 {

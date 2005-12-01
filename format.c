@@ -18,9 +18,9 @@ Hash: SHA1
 
 #define unless(cond)  if (!(cond))
 
-static char _VERSION[] = "1.01";
+static char _VERSION[] = "1.02";
 
-/* format.c, version 1.01
+/* format.c, version 1.02
 
 This is part of the Time::Format_XS module.  See the .pm file for documentation.
 
@@ -1384,8 +1384,8 @@ char *time_format(const char *fmt, SV *in_time)
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.1 (Cygwin)
 
-iD8DBQFDjzVIY96i4h5M0egRAtxBAJ9e4fWfY75oIFTFX/G4ytyynUAw7gCfUjO9
-PrbmF3g1b84uBssH+HfEFIo=
-=aAOQ
+iD8DBQFDj0IVY96i4h5M0egRAgrTAJ47WMo7o+K8q5r9ahwTzda1B7ghigCfch10
+Be6x/L/tXBld/xQDdfSQFaA=
+=Ol0Z
 -----END PGP SIGNATURE-----
 */

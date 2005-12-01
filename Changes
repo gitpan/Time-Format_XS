@@ -24,3 +24,7 @@ Revision history for Perl extension Time::Format_XS.
 1.01  2005 December 1
         - Now handles DateTime objects, stringified DateTimes,
           Date::Manip strings, and iso8601 strings.
+
+1.02  2005 December 1
+        - No changes. Had to increment the number because of a PAUSE
+          upload problem.
