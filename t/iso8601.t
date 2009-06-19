@@ -12,15 +12,15 @@ BEGIN { use_ok 'Time::Format_XS' }
 my ($Thursday, $Thu, $June, $Jun);
 my ($Saturday, $Sat, $December, $Dec);
 my ($Tuesday,  $Tue, $February, $Feb);
-eval
-{
-    require I18N::Langinfo;
-    I18N::Langinfo->import qw(langinfo DAY_3 MON_12 DAY_5 ABDAY_5 MON_6 ABMON_6);
-    ($Tuesday,  $Tue, $February, $Feb) = map ucfirst lc langinfo($_), (DAY_3(), ABDAY_3(), MON_2(),  ABMON_2());
-    ($Thursday, $Thu, $June, $Jun)     = map ucfirst lc langinfo($_), (DAY_5(), ABDAY_5(), MON_6(),  ABMON_6());
-    ($Saturday, $Sat, $December, $Dec) = map ucfirst lc langinfo($_), (DAY_7(), ABDAY_7(), MON_12(), ABMON_12());
-};
-if ($@)
+unless (eval
+    {
+        require I18N::Langinfo;
+        I18N::Langinfo->import qw(langinfo DAY_3 MON_12 DAY_5 ABDAY_5 MON_6 ABMON_6);
+        ($Tuesday,  $Tue, $February, $Feb) = map ucfirst lc langinfo($_), (DAY_3(), ABDAY_3(), MON_2(),  ABMON_2());
+        ($Thursday, $Thu, $June, $Jun)     = map ucfirst lc langinfo($_), (DAY_5(), ABDAY_5(), MON_6(),  ABMON_6());
+        ($Saturday, $Sat, $December, $Dec) = map ucfirst lc langinfo($_), (DAY_7(), ABDAY_7(), MON_12(), ABMON_12());
+        1;
+    })
 {
     ($Tuesday,  $Tue, $February, $Feb) = qw(Tuesday  Tue February Feb);
     ($Thursday, $Thu, $June, $Jun)     = qw(Thursday Thu June Jun);
@@ -349,7 +349,7 @@ like ($@, qr{\A\QInvalid minute "60" in iso8601 string\E}, "Invalid minute 60");
 $t = q{2003-06-05T13:58:62};
 eval { $fmt = time_format('Weekday, Month d, yyyy, H:mm:ssam', $t)  };
 like ($@, qr{\A\QInvalid second "62" in iso8601 string\E}, "Invalid second 62");
- 
+
 $t = q{2003-13-05X13:58:09};
 eval { $fmt = time_format('Weekday, Month d, yyyy, H:mm:ssam', $t)  };
 like ($@, qr{\A\QCan't understand time value "\E}, "Invalid datetime separator");

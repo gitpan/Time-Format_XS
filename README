@@ -1,4 +1,4 @@
-Time/Format_XS version 1.02
+eTime/Format_XS version 1.03
 ===========================
 
 This is a companion module to Time::Format.  It contains a version of
@@ -26,6 +26,8 @@ nmake.exe (available for free from microsoft.com) instead of make.
 Or wait until ActiveState makes the module available in their
 repository.  :-)
 
+Strawberry perl users on Windows should use dmake instead of make.
+
 DEPENDENCIES
 
 This module requires the standard C header file locale.h, which should
@@ -36,10 +38,10 @@ non-English month and weekday names will return English names only.
 
 COPYRIGHT AND LICENSE
 
-Copyright (C) 2003-2005 Eric J. Roode.  All rights reserved.
+Copyright (C) 2003-2009 Eric J. Roode.  All rights reserved.
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
+it.  See the end of Format_XS.pm for full details on the license.
 
 To avoid my spam filter, please include "Perl", "module", or this
 module's name in the message's subject line, and/or GPG-sign your

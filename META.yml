@@ -1,11 +1,14 @@
-# http://module-build.sourceforge.net/META-spec.html
-#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
-name:         Time-Format_XS
-version:      1.02
-version_from: Format_XS.pm
-installdirs:  site
-requires:
+--- #YAML:1.0
+name:                Time-Format_XS
+version:             1.03
+abstract:            Companion module for Time::Format, to speed up time formatting.
+license:             ~
+author:              
+    - Eric Roode <roode@cpan.org>
+generated_by:        ExtUtils::MakeMaker version 6.44
+distribution_type:   module
+requires:     
     Time::Format:                  1.01
-
-distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.17
+meta-spec:
+    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
+    version: 1.3

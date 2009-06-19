@@ -28,3 +28,7 @@ Revision history for Perl extension Time::Format_XS.
 1.02  2005 December 1
         - No changes. Had to increment the number because of a PAUSE
           upload problem.
+
+1.03  2009 June 18
+        - Fix longstanding segfault bug in set_locale.
+        - Conditionally declare tzname, so will compile in mingw (Strawberry)

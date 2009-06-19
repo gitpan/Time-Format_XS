@@ -8,17 +8,17 @@ Time::Format_XS - Companion module for Time::Format, to speed up time formatting
 
 =head1 VERSION
 
-This document describes version 1.02 of Time::Format_XS, December 1, 2005.
+This document describes version 1.03 of Time::Format_XS, June 18, 2009.
 
 =cut
 
 use strict;
 package Time::Format_XS;
 use vars qw($VERSION %PLCOMPAT);
-$VERSION = '1.02';
+$VERSION = '1.03';
 
 # List of the perl Time::Format versions that this module is compatible with:
-%PLCOMPAT = map {$_ => 1} qw(1.01 1.02);
+%PLCOMPAT = map {$_ => 1} qw(1.01 1.02 1.03 1.04 1.05 1.06 1.07 1.08 1.09 1.10 1.11);
 
 sub _croak
 {
@@ -78,26 +78,40 @@ Time::Format
 
 =head1 AUTHOR / COPYRIGHT
 
-Eric Roode, roode@cpan.org
+Copyright (c) 2003-2009 by Eric J. Roode, ROODE I<-at-> cpan I<-dot-> org
 
-Copyright (c) 2003-2005 by Eric J. Roode. All Rights Reserved.
-This module is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+All rights reserved.
 
 To avoid my spam filter, please include "Perl", "module", or this
 module's name in the message's subject line, and/or GPG-sign your
 message.
+
+This module is copyrighted only to ensure proper attribution of
+authorship and to ensure that it remains available to all.  This
+module is free, open-source software.  This module may be freely used
+for any purpose, commercial, public, or private, provided that proper
+credit is given, and that no more-restrictive license is applied to
+derivative (not dependent) works.
+
+Substantial efforts have been made to ensure that this software meets
+high quality standards; however, no guarantee can be made that there
+are no undiscovered bugs, and no warranty is made as to suitability to
+any given use, including merchantability.  Should this module cause
+your house to burn down, your dog to collapse, your heart-lung machine
+to fail, your spouse to desert you, or George Bush to be re-elected, I
+can offer only my sincere sympathy and apologies, and promise to
+endeavor to improve the software.
 
 =cut
 
 =begin gpg
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.1 (Cygwin)
+Version: GnuPG v1.4.9 (Cygwin)
 
-iD8DBQFDjzS2Y96i4h5M0egRAhQ1AJ9xqWcPpuQvJspT2d/qm/xf/Zjd9ACfWtmA
-g7jU9AoeqWfRf7VGwl0S5Fw=
-=0j0Q
+iEYEARECAAYFAko6rsIACgkQwoSYc5qQVqpe+wCcDC3nQ0+uyU2JA53up0t3Q8BW
+2gAAnR05228GxZ6Ty8gc+Euyu9tjfSc/
+=ACJN
 -----END PGP SIGNATURE-----
 
 =end gpg

@@ -9,17 +9,17 @@ BEGIN { use_ok 'Time::Format_XS' }
 *time_format = \&Time::Format_XS::time_format;
 
 my $dt_notok;
-BEGIN { eval 'use DateTime'; $dt_notok = $@? 1 : 0 }
+BEGIN {$dt_notok = eval ('use DateTime; 1')? 0 : 1}
 
 # Get day/month names in current locale
 my ($Thursday, $Thu, $June, $Jun);
-eval
-{
-    require I18N::Langinfo;
-    I18N::Langinfo->import qw(langinfo DAY_3 MON_12 DAY_5 ABDAY_5 MON_6 ABMON_6);
-    ($Thursday, $Thu, $June, $Jun) = map ucfirst lc langinfo($_), (DAY_5(), ABDAY_5(), MON_6(), ABMON_6());
-};
-if ($@)
+unless (eval
+    {
+        require I18N::Langinfo;
+        I18N::Langinfo->import qw(langinfo DAY_3 MON_12 DAY_5 ABDAY_5 MON_6 ABMON_6);
+        ($Thursday, $Thu, $June, $Jun) = map ucfirst lc langinfo($_), (DAY_5(), ABDAY_5(), MON_6(), ABMON_6());
+        1;
+    })
 {
     ($Thursday, $Thu, $June, $Jun) = qw(Thursday Thu June Jun);
 }

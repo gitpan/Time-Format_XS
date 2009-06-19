@@ -18,13 +18,13 @@ Hash: SHA1
 
 #define unless(cond)  if (!(cond))
 
-static char _VERSION[] = "1.02";
+static char _VERSION[] = "1.03";
 
-/* format.c, version 1.02
+/* format.c, version 1.03
 
 This is part of the Time::Format_XS module.  See the .pm file for documentation.
 
-This code is copyright (c) 2003-2005 by Eric J. Roode -- all rights reserved.
+This code is copyright (c) 2003-2009 by Eric J. Roode -- all rights reserved.
 
 See the Changes file for change history.
 
@@ -117,7 +117,7 @@ static void setup_locale(void)
 
     /* Locale either was never set, or has just changed.  Store it. */
     strncpy(prev_locale, cur_locale, 39);
-    cur_locale[39] = '\0';
+    prev_locale[39] = '\0';
 
 #ifdef HAS_NL_LANGINFO
     /* Zero out the month names; they'll be filled in as needed */
@@ -626,7 +626,9 @@ static void packstr_mc_limit(state self, int fmtlen, const char *name, size_t li
 #define DAY(self)     do {setup_locale(); packstr_uc(self, 3, Get_Day_Name(self->dow));}     while(0)
 #define day(self)     do {setup_locale(); packstr_lc(self, 3, Get_Day_Name(self->dow));}     while(0)
 
+#if HAVE_TZNAME && !HAVE_DECL_TZNAME
 extern char *tzname[2];
+#endif
 static void tz (state self)
 {
     if (strlen(self->tzone) == 0)
@@ -1268,7 +1270,7 @@ char *time_format(const char *fmt, SV *in_time)
                 break;
 
             case 'M':        /* Month, MONTH, Mon, MON */
-                          
+
                 if      (FORMATCODE("Month"))  Month(st);
                 else if (FORMATCODE("MONTH"))  MONTH(st);
                 else if (FORMATCODE("Mon"))    Mon(st);
@@ -1382,10 +1384,10 @@ char *time_format(const char *fmt, SV *in_time)
 
 /*
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.1 (Cygwin)
+Version: GnuPG v1.4.9 (Cygwin)
 
-iD8DBQFDj0IVY96i4h5M0egRAgrTAJ47WMo7o+K8q5r9ahwTzda1B7ghigCfch10
-Be6x/L/tXBld/xQDdfSQFaA=
-=Ol0Z
+iEYEARECAAYFAko671oACgkQwoSYc5qQVqrGTgCfbXD94tpfPSRMv7KLmnx4eDWe
+ZXkAoJiyBxkQ0sLJ7/NOYMCdjW6wfT88
+=lQyf
 -----END PGP SIGNATURE-----
 */
